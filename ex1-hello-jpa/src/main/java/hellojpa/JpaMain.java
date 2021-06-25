@@ -84,12 +84,46 @@ public class JpaMain {
 //            System.out.println("=== BEFORE ===");
 
             /* 변경 감지 */
-            Member member = em.find(Member.class, 150L);
-            member.setName("ZZZZZ");
-            System.out.println("================");
-            member.setName("AAAAA");
-            System.out.println("================");
+//            Member member = em.find(Member.class, 150L);
+//            member.setName("ZZZZZ");
+//            System.out.println("================");
+//            member.setName("AAAAA");
+//            System.out.println("================");
+
+//            Member member = new Member();
+//            member.setId("ID_A");
+//            member.setUsername("C");
+
+//            System.out.println("=================");
+//            System.out.println("member.getId() = " + member.getId());
+//            em.persist(member);
+//            System.out.println("member.getId() = " + member.getId());
+//            System.out.println("=================");
             
+            
+            /* 연관관계 매핑 */
+            // 저장
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setTeam(team);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            Member findMember = em.find(Member.class, member.getId());
+
+            List<Member> members = findMember.getTeam().getMembers();
+
+            for (Member m : members) {
+                System.out.println("m.getUsername() = " + m.getUsername());
+            }
+
+
             tx.commit();
         } catch (Exception e) {
             tx.rollback();
