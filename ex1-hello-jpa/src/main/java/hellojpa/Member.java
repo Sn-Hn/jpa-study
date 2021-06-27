@@ -4,7 +4,9 @@ import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 /* @Table을 선언하지 않으면 기본값으로 클래스명을 테이블명으로 인식 */
@@ -18,17 +20,25 @@ import java.util.Date;
 //)
 public class Member {
 
-    @Id @GeneratedValue
 //    @GeneratedValue(strategy = GenerationType.IDENTITY /*, generator = "MEMBER_SEQ_GENERATOR"*/)
+    @Id @GeneratedValue
     @Column(name = "MEMBER_ID")
     private Long id;
 
     @Column(name ="USERNAME")
     private String username;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TEAM_ID")
+    @ManyToOne/*(fetch = FetchType.LAZY)*/
+    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
     private Team team;
+
+    @OneToOne
+    @JoinColumn(name = "LOCKER_ID")
+    private Locker locker;
+
+    @OneToMany(mappedBy = "member")
+    private List<MemberProduct> memberProducts = new ArrayList<>();
+
     // 동적으로 객체를 생성해야하기 때문에 기본 생성자가 있어야 한다.
     public Member() {
     }
@@ -49,11 +59,26 @@ public class Member {
         this.username = username;
     }
 
-    public Team getTeam() {
-        return team;
-    }
+//    public Team getTeam() {
+//        return team;
+//    }
+//
+//    public void setTeam(Team team) {
+//        this.team = team;
+//    }
 
-    public void setTeam(Team team) {
-        this.team = team;
-    }
+//    public void changeTeam(Team team) {
+//        this.team = team;
+//        team.getMembers().add(this);
+//    }
+
+
+//    @Override
+//    public String toString() {
+//        return "Member{" +
+//                "id=" + id +
+//                ", username='" + username + '\'' +
+//                ", team=" + team +
+//                '}';
+//    }
 }

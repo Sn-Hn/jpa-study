@@ -103,25 +103,41 @@ public class JpaMain {
             
             /* 연관관계 매핑 */
             // 저장
+            Member member = saveMember(em);
+
+//            member.changeTeam(team);
+
             Team team = new Team();
             team.setName("TeamA");
+
+            team.getMembers().add(member);
+
             em.persist(team);
 
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setTeam(team);
-            em.persist(member);
+//            team.getMembers().add(member);
+//            team.addMember(member);
 
-            em.flush();
-            em.clear();
+//            em.flush();
+//            em.clear();
 
-            Member findMember = em.find(Member.class, member.getId());
+//            Member findMember = em.find(Member.class, member.getId());
 
-            List<Member> members = findMember.getTeam().getMembers();
+//            List<Member> members = findMember.getTeam().getMembers();
+//
+//            for (Member m : members) {
+//                System.out.println("m.getUsername() = " + m.getUsername());
+//            }
 
-            for (Member m : members) {
-                System.out.println("m.getUsername() = " + m.getUsername());
-            }
+//            Team findTeam = em.find(Team.class, team.getId());
+//            List<Member> members = findTeam.getMembers();
+
+//            System.out.println("============");
+//            for (Member member1 : members) {
+//                System.out.println("member1.getUsername() = " + member1.getUsername());
+//            }
+            /* #주의# toString 시 무한 루프에 걸릴 수 있다. */
+//            System.out.println("findTeam = " + findTeam);
+//            System.out.println("============");
 
 
             tx.commit();
@@ -132,5 +148,13 @@ public class JpaMain {
         }
 
         emf.close();
+    }
+
+    private static Member saveMember(EntityManager em) {
+        Member member = new Member();
+        member.setUsername("member1");
+
+        em.persist(member);
+        return member;
     }
 }
