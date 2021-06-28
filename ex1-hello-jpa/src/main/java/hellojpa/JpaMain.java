@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class JpaMain {
@@ -103,16 +104,16 @@ public class JpaMain {
             
             /* 연관관계 매핑 */
             // 저장
-            Member member = saveMember(em);
+//            Member member = saveMember(em);
 
 //            member.changeTeam(team);
 
-            Team team = new Team();
-            team.setName("TeamA");
-
-            team.getMembers().add(member);
-
-            em.persist(team);
+//            Team team = new Team();
+//            team.setName("TeamA");
+//
+//            team.getMembers().add(member);
+//
+//            em.persist(team);
 
 //            team.getMembers().add(member);
 //            team.addMember(member);
@@ -138,6 +139,28 @@ public class JpaMain {
             /* #주의# toString 시 무한 루프에 걸릴 수 있다. */
 //            System.out.println("findTeam = " + findTeam);
 //            System.out.println("============");
+
+            /* 고급 매핑 */
+//            Movie movie = new Movie();
+//            movie.setDirector("aaa");
+//            movie.setActor("bbbb");
+//            movie.setName("바람과함께사라지다.");
+//            movie.setPrice(10000);
+
+//            em.persist(movie);
+
+//            Item findItem = em.find(Item.class, movie.getId());
+//            System.out.println("findMovie = " + findItem);
+
+            Member member = new Member();
+            member.setUsername("user1");
+            member.setCreatedBy("kim");
+            member.setCreatedDate(LocalDateTime.now());
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
 
 
             tx.commit();
