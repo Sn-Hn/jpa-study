@@ -1,9 +1,8 @@
 package hellojpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Persistence;
+import org.hibernate.Hibernate;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -152,25 +151,123 @@ public class JpaMain {
 //            Item findItem = em.find(Item.class, movie.getId());
 //            System.out.println("findMovie = " + findItem);
 
-            Member member = new Member();
-            member.setUsername("user1");
-            member.setCreatedBy("kim");
-            member.setCreatedDate(LocalDateTime.now());
+//            Member member = new Member();
+//            member.setUsername("user1");
+//            member.setCreatedBy("kim");
+//            member.setCreatedDate(LocalDateTime.now());
 
-            em.persist(member);
+//            em.persist(member);
+
+            /* 프록시 */
+//            Member member = em.find(Member.class, 1L);
+
+//            printMember(member);
+            
+//            printMemberAndTeam(member);
+            
+//            Team team = new Team();
+//            team.setName("teamA");
+//            em.persist(team);
+//
+//            Member member1 = new Member();
+//            member1.setUsername("member1");
+//            member1.setTeam(team);
+//
+//            em.persist(member1);
+
+//            Member member2 = new Member();
+//            member2.setUsername("member2");
+//            em.persist(member2);
+
+
+//            em.flush();
+//            em.clear();
+
+//            Member findMember = em.find(Member.class, member1.getId());
+
+//            List<Member> members = em.createQuery("select m from Member m join fetch m.team", Member.class)
+//                    .getResultList();
+
+//            System.out.println("findMember.getClass() = " + findMember.getTeam().getClass());
+//
+//            System.out.println("=======");
+//            System.out.println(findMember.getTeam().getName());     // 초기화
+//            System.out.println("=======");
+//            Member m2 = em.getReference(Member.class, member2.getId());
+//            Member findMember = em.getReference(Member.class, member.getId());
+//            System.out.println("findMember.getId() = " + findMember.getId());
+//            System.out.println("findMember.getUsername() = " + findMember.getUsername());
+
+//            logic(m1, m2);
+
+//            Member findMember = em.find(Member.class, member1.getId());
+//            System.out.println("findMember.getClass() = " + findMember.getClass());
+
+//            System.out.println("refMember == findMember e :  = " + (refMember == findMember));
+
+//            em.detach(refMember);
+//            em.clear();
+//            em.close();
+
+//            System.out.println("refMember.getUsername() = " + refMember.getUsername());
+//            refMember.getUsername();
+            // 프록시 객체 초기화 여부 확인
+//            System.out.println("isLoaded = " + emf.getPersistenceUnitUtil().isLoaded(refMember));
+
+            // 프록시 강제 초기화
+//            Hibernate.initialize(refMember);        // JPA 표준에는 강제 초기화 없음 -> 강제 호출 : refMember.getUsername()
+
+            /* 영속성 전이 CASCADE */
+            Child child1 = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+            em.persist(child1);
+            em.persist(child2);
 
             em.flush();
             em.clear();
 
+            Parent findParent = em.find(Parent.class, parent.getId());
+//            findParent.getChildList().remove(1);
+
+//            em.remove(findParent);
+
+            findParent.getChildList().remove(0);
 
             tx.commit();
+
+
         } catch (Exception e) {
             tx.rollback();
+            e.printStackTrace();
         } finally {
             em.close();
         }
 
         emf.close();
+    }
+
+    private static void logic(Member m1, Member m2) {
+//        System.out.println("m1.getClass() == m2.getClass() = " + (m1.getClass() == m2.getClass()));
+        System.out.println("m1 = " + (m1 instanceof Member));
+        System.out.println("m2 = " + (m2 instanceof Member));
+    }
+
+    private static void printMember(Member member) {
+        System.out.println("member.getUsername() = " + member.getUsername());
+    }
+
+    private static void printMemberAndTeam(Member member) {
+        String username = member.getUsername();
+        System.out.println("username = " + username);
+
+        Team team = member.getTeam();
+        System.out.println("team.getName() = " + team.getName());
     }
 
     private static Member saveMember(EntityManager em) {

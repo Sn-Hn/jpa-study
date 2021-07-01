@@ -24,8 +24,8 @@ public class Member extends BaseEntity {
     @Column(name ="USERNAME")
     private String username;
 
-    @ManyToOne/*(fetch = FetchType.LAZY)*/
-    @JoinColumn(name = "TEAM_ID", insertable = false, updatable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn
     private Team team;
 
     @OneToOne
@@ -77,4 +77,13 @@ public class Member extends BaseEntity {
 //                ", team=" + team +
 //                '}';
 //    }
+
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 }
