@@ -1,6 +1,7 @@
 package hellojpa;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,16 +25,35 @@ public class Member extends BaseEntity {
     @Column(name ="USERNAME")
     private String username;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn
-    private Team team;
+    // 기간 Period
+    @Embedded
+    private Period workPeriod;
 
-    @OneToOne
-    @JoinColumn(name = "LOCKER_ID")
-    private Locker locker;
+    // 주소
+    @Embedded
+    private Address homeAddress;
 
-    @OneToMany(mappedBy = "member")
-    private List<MemberProduct> memberProducts = new ArrayList<>();
+//    @Embedded
+//    @AttributeOverrides({
+//            @AttributeOverride(name="city",
+//                    column = @Column(name = "WORK_CITY")),
+//            @AttributeOverride(name="street",
+//                    column = @Column(name = "WORK_STREET")),
+//            @AttributeOverride(name="zipcode",
+//                    column = @Column(name = "WORK_ZIPCODE"))
+//    })
+//    private Address workAddress;
+
+//    @ManyToOne(fetch = FetchType.EAGER)
+//    @JoinColumn
+//    private Team team;
+//
+//    @OneToOne
+//    @JoinColumn(name = "LOCKER_ID")
+//    private Locker locker;
+//
+//    @OneToMany(mappedBy = "member")
+//    private List<MemberProduct> memberProducts = new ArrayList<>();
 
     // 동적으로 객체를 생성해야하기 때문에 기본 생성자가 있어야 한다.
     public Member() {
@@ -77,13 +97,30 @@ public class Member extends BaseEntity {
 //                ", team=" + team +
 //                '}';
 //    }
+//
+//
+//    public Team getTeam() {
+//        return team;
+//    }
+//
+//    public void setTeam(Team team) {
+//        this.team = team;
+//    }
 
 
-    public Team getTeam() {
-        return team;
+    public Period getWorkPeriod() {
+        return workPeriod;
     }
 
-    public void setTeam(Team team) {
-        this.team = team;
+    public void setWorkPeriod(Period workPeriod) {
+        this.workPeriod = workPeriod;
+    }
+
+    public Address getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(Address homeAddress) {
+        this.homeAddress = homeAddress;
     }
 }

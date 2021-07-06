@@ -218,26 +218,46 @@ public class JpaMain {
 //            Hibernate.initialize(refMember);        // JPA 표준에는 강제 초기화 없음 -> 강제 호출 : refMember.getUsername()
 
             /* 영속성 전이 CASCADE */
-            Child child1 = new Child();
-            Child child2 = new Child();
+//            Child child1 = new Child();
+//            Child child2 = new Child();
+//
+//            Parent parent = new Parent();
+//            parent.addChild(child1);
+//            parent.addChild(child2);
+//
+//            em.persist(parent);
+//            em.persist(child1);
+//            em.persist(child2);
+//
+//            em.flush();
+//            em.clear();
 
-            Parent parent = new Parent();
-            parent.addChild(child1);
-            parent.addChild(child2);
-
-            em.persist(parent);
-            em.persist(child1);
-            em.persist(child2);
-
-            em.flush();
-            em.clear();
-
-            Parent findParent = em.find(Parent.class, parent.getId());
+//            Parent findParent = em.find(Parent.class, parent.getId());
 //            findParent.getChildList().remove(1);
 
 //            em.remove(findParent);
 
-            findParent.getChildList().remove(0);
+//            findParent.getChildList().remove(0);
+
+            Address address = new Address("city", "street", "10");
+
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setHomeAddress(address);;
+            em.persist(member1);
+
+//            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
+//
+//            Member member2 = new Member();
+//            member2.setUsername("member2");
+//            member2.setHomeAddress(copyAddress);
+//            em.persist(member2);
+
+//            member1.getHomeAddress().setCity("newCity");
+
+            // member1을 바꾸고 싶다면 객체를 재 생성해야 한다.
+            Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode());
+            member1.setHomeAddress(newAddress);
 
             tx.commit();
 
@@ -252,29 +272,29 @@ public class JpaMain {
         emf.close();
     }
 
-    private static void logic(Member m1, Member m2) {
-//        System.out.println("m1.getClass() == m2.getClass() = " + (m1.getClass() == m2.getClass()));
-        System.out.println("m1 = " + (m1 instanceof Member));
-        System.out.println("m2 = " + (m2 instanceof Member));
-    }
-
-    private static void printMember(Member member) {
-        System.out.println("member.getUsername() = " + member.getUsername());
-    }
-
-    private static void printMemberAndTeam(Member member) {
-        String username = member.getUsername();
-        System.out.println("username = " + username);
-
-        Team team = member.getTeam();
-        System.out.println("team.getName() = " + team.getName());
-    }
-
-    private static Member saveMember(EntityManager em) {
-        Member member = new Member();
-        member.setUsername("member1");
-
-        em.persist(member);
-        return member;
-    }
+//    private static void logic(Member m1, Member m2) {
+////        System.out.println("m1.getClass() == m2.getClass() = " + (m1.getClass() == m2.getClass()));
+//        System.out.println("m1 = " + (m1 instanceof Member));
+//        System.out.println("m2 = " + (m2 instanceof Member));
+//    }
+//
+//    private static void printMember(Member member) {
+//        System.out.println("member.getUsername() = " + member.getUsername());
+//    }
+//
+//    private static void printMemberAndTeam(Member member) {
+//        String username = member.getUsername();
+//        System.out.println("username = " + username);
+//
+//        Team team = member.getTeam();
+//        System.out.println("team.getName() = " + team.getName());
+//    }
+//
+//    private static Member saveMember(EntityManager em) {
+//        Member member = new Member();
+//        member.setUsername("member1");
+//
+//        em.persist(member);
+//        return member;
+//    }
 }
