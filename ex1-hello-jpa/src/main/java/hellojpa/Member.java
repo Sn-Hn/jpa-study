@@ -3,7 +3,9 @@ package hellojpa;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 /* @Table을 선언하지 않으면 기본값으로 클래스명을 테이블명으로 인식 */
@@ -32,6 +34,24 @@ public class Member extends BaseEntity {
     // 주소
     @Embedded
     private Address homeAddress;
+
+    @ElementCollection
+    @CollectionTable(name = "FAVORITE_FOOD", joinColumns =
+        @JoinColumn(name = "MEMBER_ID")
+    )
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+//    @OrderColumn(name = "address_history_order") 해결방안이지만 너무 위험
+//    @ElementCollection
+//    @CollectionTable(name = "ADDRESS", joinColumns =
+//        @JoinColumn(name = "MEMBER_ID")
+//    )
+//    private List<Address> addresseHistory = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MEMBER_ID")
+    private List<AddressEntity> addresseHistory = new ArrayList<>();
 
 //    @Embedded
 //    @AttributeOverrides({
@@ -122,5 +142,29 @@ public class Member extends BaseEntity {
 
     public void setHomeAddress(Address homeAddress) {
         this.homeAddress = homeAddress;
+    }
+
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    private void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
+    }
+
+//    public List<Address> getAddresseHistory() {
+//        return addresseHistory;
+//    }
+//
+//    private void setAddresseHistory(List<Address> addresseHistory) {
+//        this.addresseHistory = addresseHistory;
+//    }
+
+    public List<AddressEntity> getAddresseHistory() {
+        return addresseHistory;
+    }
+
+    public void setAddresseHistory(List<AddressEntity> addresseHistory) {
+        this.addresseHistory = addresseHistory;
     }
 }

@@ -5,6 +5,7 @@ import org.hibernate.Hibernate;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 public class JpaMain {
     public static void main(String[] args) {
@@ -239,12 +240,13 @@ public class JpaMain {
 
 //            findParent.getChildList().remove(0);
 
-            Address address = new Address("city", "street", "10");
-
-            Member member1 = new Member();
-            member1.setUsername("member1");
-            member1.setHomeAddress(address);;
-            em.persist(member1);
+            /* 값 타입 */
+//            Address address = new Address("city", "street", "10");
+//
+//            Member member1 = new Member();
+//            member1.setUsername("member1");
+//            member1.setHomeAddress(address);
+//            em.persist(member1);
 
 //            Address copyAddress = new Address(address.getCity(), address.getStreet(), address.getZipcode());
 //
@@ -256,11 +258,56 @@ public class JpaMain {
 //            member1.getHomeAddress().setCity("newCity");
 
             // member1을 바꾸고 싶다면 객체를 재 생성해야 한다.
-            Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode());
-            member1.setHomeAddress(newAddress);
+//            Address newAddress = new Address("NewCity", address.getStreet(), address.getZipcode());
+//            member1.setHomeAddress(newAddress);
+
+            /* 값 타입 컬렉션 */
+            Member member = new Member();
+            member.setUsername("member1");
+            member.setHomeAddress(new Address("city1", "street", "10000"));
+            
+            member.getFavoriteFoods().add("치킨");
+            member.getFavoriteFoods().add("족발");
+            member.getFavoriteFoods().add("피자");
+
+            member.getAddresseHistory().add(new AddressEntity("old1", "street", "zipcode"));
+            member.getAddresseHistory().add(new AddressEntity("old2", "street", "zipcode"));
+
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            System.out.println("================ START ================");
+            Member findMember = em.find(Member.class, member.getId());
+
+//            List<Address> addresseHistory = findMember.getAddresseHistory();
+//            for (Address address : addresseHistory) {
+//                System.out.println("address.getCity() = " + address.getCity());
+//            }
+//
+//            Set<String> favoriteFoods = findMember.getFavoriteFoods();
+//
+//            for (String favoriteFood : favoriteFoods) {
+//                System.out.println("favoriteFood = " + favoriteFood);
+//            }
+
+            // homeCity -> newCity
+//            findMember.getHomeAddress().setCity("newCity");
+            System.out.println("================ START ================");
+
+
+            Address a = findMember.getHomeAddress();
+            findMember.setHomeAddress(new Address("newCity", a.getStreet(), a.getZipcode()));
+
+            // 치킨 -> 한식
+            findMember.getFavoriteFoods().remove("치킨");
+            findMember.getFavoriteFoods().add("한식");
+
+//            findMember.getAddresseHistory().remove(new AddressEntity("old1", "street", "zipcode"));
+//            findMember.getAddresseHistory().add(new AddressEntity("newCity1", "street1", "10000"));
 
             tx.commit();
-
 
         } catch (Exception e) {
             tx.rollback();
