@@ -1,6 +1,7 @@
 package jpql;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 
 public class JpaMain {
@@ -21,17 +22,21 @@ public class JpaMain {
             team.setName("teamA");
             em.persist(team);
 
-            Member member = new Member();
-            member.setUsername("member1");
-            member.setAge(20);
-            member.setTeam(team);
-            member.setType(MemberType.ADMIN);
-            em.persist(member);
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setAge(20);
+            member1.setTeam(team);
+            member1.setType(MemberType.ADMIN);
+            em.persist(member1);
 
             Member member2 = new Member();
             member2.setUsername("member2");
+            member2.setTeam(team);
             member2.setAge(10);
             em.persist(member2);
+
+            em.flush();
+            em.clear();
 
             /* 페이징 */
 //            for (int i = 0; i < 100; i++) {
@@ -143,14 +148,28 @@ public class JpaMain {
 
             /* 사용자 정의 함수 */
 //            String query = "select function('group_concat', m.username) from Member m";
-            String query = "select group_concat(m.username) from Member m";
+//            String query = "select group_concat(m.username) from Member m";
+//
+//            List<String> resultList = em.createQuery(query, String.class)
+//                    .getResultList();
+//
+//            for (String s : resultList) {
+//                System.out.println("s = " + s);
+//            }
 
-            List<String> resultList = em.createQuery(query, String.class)
+            /* 단일 값 연관 경로 (묵시적 내부 조인 발생) */
+//            String query = "select m.team from Member m";
+            String query = "select m From Team t join t.members m";
+
+            List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
 
-            for (String s : resultList) {
-                System.out.println("s = " + s);
-            }
+            System.out.println("result = " + result);
+
+//            for (Integer s : resultList) {
+//                System.out.println("s = " + s);
+//            }
+
 
 
             tx.commit();
