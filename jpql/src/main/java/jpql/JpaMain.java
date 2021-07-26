@@ -46,8 +46,8 @@ public class JpaMain {
             member3.setAge(10);
             em.persist(member3);
 
-            em.flush();
-            em.clear();
+//            em.flush();
+//            em.clear();
 
             /* 페이징 */
 //            for (int i = 0; i < 100; i++) {
@@ -202,21 +202,63 @@ public class JpaMain {
             // 쿼리에 distinct를 넣어도 중복제거가 되지 않을 수 있다.
             // distinct가 추가로 어플리케이션에서 중복 제거 시도
             // 같은 식별자를 가진 Team 엔티티 제거
-            String query = "select t From Team t";
+//            String query = "select m From Team t";
+//
+//            List<Team> result = em.createQuery(query, Team.class)
+//                    .setFirstResult(0)
+//                    .setMaxResults(2)
+//                    .getResultList();
+//
+//            System.out.println("result.size = " + result.size());
+//
+//            for (Team team : result) {
+//                System.out.println("member = " + team.getName() + " | member = " + team.getMembers().size());
+//                for (Member member : team.getMembers()) {
+//                    System.out.println("-> member = " + member);
+//                }
+//            }
 
-            List<Team> result = em.createQuery(query, Team.class)
-                    .setFirstResult(0)
-                    .setMaxResults(2)
-                    .getResultList();
+//            String query = "select m From Member m where m.team = :team";
+//
+//            List<Member> result = em.createQuery(query, Member.class)
+//                    .setParameter("team", teamA)
+//                    .getResultList();
+//
+//            System.out.println("findMember = " + findMember);
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member);
+//            }
 
-            System.out.println("result.size = " + result.size());
+            /* 네임드 쿼리 */
+//            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+//                    .setParameter("username", "회원1")
+//                    .getResultList();
+//
+//            for (Member member : resultList) {
+//                System.out.println("member = " + member);
+//            }
 
-            for (Team team : result) {
-                System.out.println("member = " + team.getName() + " | member = " + team.getMembers().size());
-                for (Member member : team.getMembers()) {
-                    System.out.println("-> member = " + member);
-                }
-            }
+            /* 벌크 연산 */
+            // flush 호출 -> commit, query, 강제 호출(flush)
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+
+            System.out.println("resultCount = " + resultCount);
+
+            // 벌크 연산 후 DB에는 쿼리가 날라가 반영이 되어있지만
+            // 영속성 컨텍스트에는 반영이 되지 않았다.
+            // 따라서 영속성 컨텍스트를 초기화 해주어야 한다.
+            System.out.println("member1.getAge() = " + member1.getAge());
+            System.out.println("member2.getAge() = " + member2.getAge());
+            System.out.println("member3.getAge() = " + member3.getAge());
+
+            em.clear();
+
+            Member findMember2 = em.find(Member.class, member2.getId());
+
+            System.out.println("findMember2 = " + findMember2.getAge());
+
 
             tx.commit();
         } catch (Exception e) {
