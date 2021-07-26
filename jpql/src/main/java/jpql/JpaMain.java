@@ -18,22 +18,33 @@ public class JpaMain {
 
         try {
             /* jpql */
-            Team team = new Team();
-            team.setName("teamA");
-            em.persist(team);
+            Team teamA = new Team();
+            teamA.setName("팀A");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            teamB.setName("팀B");
+            em.persist(teamB);
+
 
             Member member1 = new Member();
-            member1.setUsername("member1");
+            member1.setUsername("회원1");
             member1.setAge(20);
-            member1.setTeam(team);
+            member1.setTeam(teamA);
             member1.setType(MemberType.ADMIN);
             em.persist(member1);
 
             Member member2 = new Member();
-            member2.setUsername("member2");
-            member2.setTeam(team);
+            member2.setUsername("회원2");
+            member2.setTeam(teamA);
             member2.setAge(10);
             em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("회원3");
+            member3.setTeam(teamB);
+            member3.setAge(10);
+            em.persist(member3);
 
             em.flush();
             em.clear();
@@ -159,18 +170,53 @@ public class JpaMain {
 
             /* 단일 값 연관 경로 (묵시적 내부 조인 발생) */
 //            String query = "select m.team from Member m";
-            String query = "select m From Team t join t.members m";
+//            String query = "select m From Team t join t.members m";
 
-            List<Member> result = em.createQuery(query, Member.class)
-                    .getResultList();
+//            List<Member> result = em.createQuery(query, Member.class)
+//                    .getResultList();
 
-            System.out.println("result = " + result);
+//            System.out.println("result = " + result);
 
 //            for (Integer s : resultList) {
 //                System.out.println("s = " + s);
 //            }
 
+            
+            /* 페치 조인 */
+//            String query = "select m From Member m join fetch m.team";
+//
+//            List<Member> result = em.createQuery(query, Member.class)
+//                    .getResultList();
+//
+//            for (Member member : result) {
+//                System.out.println("member = " + member.getUsername() + ", " + member.getTeam().getName());
+//                // 회원1, 팀A (SQL)
+//                // 회원2, 팀A (1차 캐시)
+//                // 회원3, 팀B (SQL)
+//
+//                // 회원 100명 -> N + 1 문제 발생
+//            }
+            
+            /* 컬렉션 페치 조인 */
+            // 일대다 페치 조인시 데이터가 중복될 수 있다.
+            // 쿼리에 distinct를 넣어도 중복제거가 되지 않을 수 있다.
+            // distinct가 추가로 어플리케이션에서 중복 제거 시도
+            // 같은 식별자를 가진 Team 엔티티 제거
+            String query = "select t From Team t";
 
+            List<Team> result = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
+                    .getResultList();
+
+            System.out.println("result.size = " + result.size());
+
+            for (Team team : result) {
+                System.out.println("member = " + team.getName() + " | member = " + team.getMembers().size());
+                for (Member member : team.getMembers()) {
+                    System.out.println("-> member = " + member);
+                }
+            }
 
             tx.commit();
         } catch (Exception e) {
